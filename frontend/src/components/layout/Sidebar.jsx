@@ -53,7 +53,7 @@ const Sidebar = () => {
               ⚙️ Stock Adjustments
             </NavLink>
             <NavLink to="/stock" className="block px-4 py-2 hover:bg-gray-100">
-              📦 Stock Ledger
+              📦 Current Stock
             </NavLink>
             <NavLink
               to="/stock-transfer"

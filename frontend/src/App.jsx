@@ -67,7 +67,7 @@ import StockByWarehouse from "./pages/inventory/stock/StockByWarehouse";
 import TransferStock from "./pages/inventory/stock/TransferStock";
 
 // Reports
-import StockReport from "./pages/reports/StockReport";
+import StockLedgerReport from "./pages/reports/StockLedgerReport";
 import SalesReport from "./pages/reports/SalesReport";
 import SalesReturnReport from "./pages/reports/SalesReturnReport";
 
@@ -398,7 +398,7 @@ export default function App() {
             <PrivateRoute roles={["admin", "manager"]}>
               <Layout>
                 <div className="max-w-6xl mx-auto mt-6">
-                  <StockReport />
+                  <StockLedgerReport />
                 </div>
               </Layout>
             </PrivateRoute>

@@ -1,20 +1,21 @@
-// backend/controllers/purchaseReturnController.js
+// === File: backend/controllers/purchaseReturnController.js ===
+
 import PurchaseReturn from "../models/PurchaseReturn.js";
 import GoodsReceipt from "../models/GoodsReceipt.js";
-import { decreaseStock } from "./stockController.js";
+import { decreaseStock } from "../utils/stockHelpers.js";
 import Warehouse from "../models/Warehouse.js";
-
-import StockLedger from "../models/StockLedger.js"; // ✅ Add this import if missing
 
 export const createPurchaseReturn = async (req, res) => {
   try {
     const { grn, returnedItems, remarks, createdBy, warehouse } = req.body;
 
+    // 1. Validate warehouse
     const warehouseExists = await Warehouse.findById(warehouse);
     if (!warehouseExists) {
       return res.status(400).json({ message: "Invalid warehouse ID" });
     }
 
+    // 2. Validate GRN
     const grnDoc = await GoodsReceipt.findById(grn).populate(
       "receivedItems.item"
     );
@@ -22,11 +23,13 @@ export const createPurchaseReturn = async (req, res) => {
       return res.status(404).json({ message: "GRN not found" });
     }
 
+    // 3. Build GRN item map
     const grnItemsMap = {};
     for (const ri of grnDoc.receivedItems) {
       grnItemsMap[ri.item._id.toString()] = ri.receivedQty;
     }
 
+    // 4. Validate return quantities
     for (const ret of returnedItems) {
       const itemId = ret.item;
       const qty = parseInt(ret.returnQty);
@@ -40,10 +43,9 @@ export const createPurchaseReturn = async (req, res) => {
           message: `Returned qty ${qty} exceeds received for item ${itemId}`,
         });
       }
-
-      await decreaseStock(itemId, qty, "PurchaseReturn", null, warehouse);
     }
 
+    // 5. Save the return FIRST to get the _id
     const purchaseReturn = new PurchaseReturn({
       grn,
       returnedItems,
@@ -51,19 +53,22 @@ export const createPurchaseReturn = async (req, res) => {
       warehouse,
       createdBy,
     });
-
     await purchaseReturn.save();
 
+    const refNo = `PR#${purchaseReturn._id.toString().slice(-4)}`;
+
+    // 6. Decrease stock and ledger log via stockController
     for (const ret of returnedItems) {
-      await StockLedger.create({
-        item: ret.item,
-        quantity: ret.returnQty,
+      await decreaseStock(
+        ret.item,
+        ret.returnQty,
+        "Purchase Return",
+        purchaseReturn._id,
         warehouse,
-        transactionType: "RETURN",
-        source: "PurchaseReturn",
-        sourceId: purchaseReturn._id,
-        timestamp: new Date(),
-      });
+        createdBy,
+        remarks || `Returned from GRN ${grnDoc._id}`,
+        refNo
+      );
     }
 
     return res.status(201).json({
@@ -83,6 +88,7 @@ export const createPurchaseReturn = async (req, res) => {
     });
   }
 };
+
 // 📄 Get All Purchase Returns
 export const getAllReturns = async (req, res) => {
   try {
@@ -102,6 +108,7 @@ export const getAllReturns = async (req, res) => {
 
     res.status(200).json(returns);
   } catch (err) {
+    console.error("❌ Error in getAllReturns:", err);
     res.status(500).json({
       message: "Failed to fetch returns",
       error: err.message,

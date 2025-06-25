@@ -1,11 +1,11 @@
-// backend/server.js
+// === File: backend/server.js ===
+
 import express from "express";
 import dotenv from "dotenv";
 import cors from "cors";
-import connectDB from "./config/db.js"; // ✅ Importing clean MongoDB connection
+import connectDB from "./config/db.js"; // ✅ MongoDB connection
 
-// Routes
-// Routes
+// 🌐 Route Imports
 import itemRoutes from "./routes/itemRoutes.js";
 import categoryRoutes from "./routes/categoryRoutes.js";
 import authRoutes from "./routes/authRoutes.js";
@@ -14,7 +14,7 @@ import vendorRoutes from "./routes/vendorRoutes.js";
 import unitRoutes from "./routes/unitRoutes.js";
 import clientRoutes from "./routes/clientRoutes.js";
 import purchaseOrderRoutes from "./routes/purchaseOrderRoutes.js";
-import stockRoutes from "./routes/stockRoutes.js";
+import stockRoutes from "./routes/stockRoutes.js"; // ✅ General stock routes (GET, stock summary etc.)
 import deliveryChallanRoutes from "./routes/deliveryChallanRoutes.js";
 import stockLedgerRoutes from "./routes/stockLedgerRoutes.js";
 import stockAdjustmentRoutes from "./routes/stockAdjustmentRoutes.js";
@@ -25,18 +25,19 @@ import purchaseReturnRoutes from "./routes/purchaseReturnRoutes.js";
 import vendorQuotationRoutes from "./routes/vendorQuotationRoutes.js";
 import salesOrderRoutes from "./routes/salesOrderRoutes.js";
 import warehouseRoutes from "./routes/warehouseRoutes.js";
+import stockTransferRoutes from "./routes/stockTransferRoutes.js"; // ✅ Only for /transfer
 
 dotenv.config();
-
 const app = express();
 
+// 🔧 Middleware
 app.use(cors());
 app.use(express.json());
 
-// ✅ Connect to MongoDB
+// 🔌 Connect to MongoDB
 connectDB();
-// ✅ Set up all API routes
 
+// 📦 Register All API Routes
 app.use("/api/items", itemRoutes);
 app.use("/api/categories", categoryRoutes);
 app.use("/api/auth", authRoutes);
@@ -46,7 +47,8 @@ app.use("/api/units", unitRoutes);
 app.use("/api/clients", clientRoutes);
 app.use("/api/purchase-orders", purchaseOrderRoutes);
 app.use("/api/purchase-returns", purchaseReturnRoutes);
-app.use("/api/stocks", stockRoutes);
+app.use("/api/stocks", stockRoutes); // ✅ stock dashboard and summary API
+app.use("/api/stocks/transfer", stockTransferRoutes); // ✅ for POST /api/stocks/transfer
 app.use("/api/delivery-challans", deliveryChallanRoutes);
 app.use("/api/stock-ledger", stockLedgerRoutes);
 app.use("/api/stock-adjustments", stockAdjustmentRoutes);
@@ -57,6 +59,6 @@ app.use("/api/vendor-quotations", vendorQuotationRoutes);
 app.use("/api/sales-orders", salesOrderRoutes);
 app.use("/api/warehouses", warehouseRoutes);
 
-// ✅ Start the server
+// 🚀 Start the server
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));

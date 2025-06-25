@@ -1,29 +1,29 @@
-// === File: backend/controllers/salesReturnController.js ===
 import SalesReturn from "../models/SalesReturn.js";
 import SalesInvoice from "../models/SalesInvoice.js";
-import StockLedger from "../models/StockLedger.js";
-import { increaseStock } from "../controllers/stockController.js";
+import { increaseStock } from "../utils/stockHelpers.js";
 import Warehouse from "../models/Warehouse.js";
 
+// @desc    Create Sales Return
+// @route   POST /api/sales-returns
+// @access  Private
 export const createSalesReturn = async (req, res) => {
   try {
     const { referenceId, items, reason, warehouseId } = req.body;
 
-    // ✅ Validate warehouse
+    // 1. Validate warehouse
     const warehouse = await Warehouse.findById(warehouseId);
     if (!warehouse) {
       return res.status(400).json({ message: "Invalid warehouse ID" });
     }
 
-    // ✅ Fetch the invoice
+    // 2. Fetch the invoice
     const invoice = await SalesInvoice.findById(referenceId);
     if (!invoice) {
       return res.status(404).json({ message: "Invoice not found" });
     }
 
-    // ✅ Check existing returns
+    // 3. Aggregate already returned quantities
     const pastReturns = await SalesReturn.find({ referenceId });
-
     const returnedQtyMap = {};
     for (const r of pastReturns) {
       for (const i of r.items) {
@@ -31,18 +31,17 @@ export const createSalesReturn = async (req, res) => {
       }
     }
 
-    // ✅ Validate return quantities
+    // 4. Validate return quantities
     for (const { item, quantity } of items) {
       const original = invoice.items.find((i) => i.item.toString() === item);
       if (!original) {
-        return res.status(400).json({
-          message: `Item ${item} not found in invoice`,
-        });
+        return res
+          .status(400)
+          .json({ message: `Item ${item} not found in invoice` });
       }
 
       const alreadyReturned = returnedQtyMap[item] || 0;
       const remaining = original.quantity - alreadyReturned;
-
       if (quantity > remaining) {
         return res.status(400).json({
           message: `Cannot return ${quantity} of item ${item}. Only ${remaining} left to return.`,
@@ -50,7 +49,7 @@ export const createSalesReturn = async (req, res) => {
       }
     }
 
-    // ✅ Create sales return + update stock and ledger
+    // 5. Create Sales Return FIRST to get _id for refNo
     const salesReturn = await SalesReturn.create({
       referenceId,
       items,
@@ -59,24 +58,20 @@ export const createSalesReturn = async (req, res) => {
       createdBy: req.user._id,
     });
 
+    const refNo = `SR#${salesReturn._id.toString().slice(-4)}`;
+
+    // 6. Increase stock & auto-log to ledger using helper
     for (const { item, quantity } of items) {
       await increaseStock(
         item,
         quantity,
-        "SalesReturn",
+        "Sales Return",
         salesReturn._id,
-        warehouseId
+        warehouseId,
+        req.user?.name,
+        reason,
+        refNo
       );
-
-      await StockLedger.create({
-        item,
-        transactionType: "RETURN",
-        quantity,
-        source: "SalesReturn",
-        sourceId: salesReturn._id,
-        warehouse: warehouseId,
-        timestamp: new Date(),
-      });
     }
 
     res.status(201).json({
@@ -91,7 +86,10 @@ export const createSalesReturn = async (req, res) => {
     });
   }
 };
-// controllers/salesReturnController.js
+
+// @desc    Get All Sales Returns (with client & item details)
+// @route   GET /api/sales-returns
+// @access  Private
 export const getSalesReturns = async (req, res) => {
   try {
     const returns = await SalesReturn.find()
@@ -100,7 +98,7 @@ export const getSalesReturns = async (req, res) => {
         select: "invoiceNumber client",
         populate: {
           path: "client",
-          model: "Client", // ✅ explicitly tell Mongoose it's the Client model
+          model: "Client",
           select: "name",
         },
       })
@@ -116,6 +114,10 @@ export const getSalesReturns = async (req, res) => {
     });
   }
 };
+
+// @desc    Get Eligible Invoices for Return (not fully returned)
+// @route   GET /api/sales-returns/eligible
+// @access  Private
 export const getEligibleInvoicesForReturn = async (req, res) => {
   try {
     const invoices = await SalesInvoice.find()
@@ -124,7 +126,6 @@ export const getEligibleInvoicesForReturn = async (req, res) => {
 
     const returns = await SalesReturn.find();
 
-    // Map: invoiceId -> itemId -> returnedQty
     const returnMap = {};
     for (const r of returns) {
       if (!returnMap[r.referenceId]) returnMap[r.referenceId] = {};

@@ -51,27 +51,34 @@ const Dashboard = () => {
   };
 
   const totalQty = stocks.reduce((sum, s) => sum + s.quantity, 0);
-  const lowStockItems = stocks.filter(
-    (s) => s.quantity <= (s.item?.lowAlert || 0)
-  );
-  const activeCategories = new Set(
-    stocks.map((s) => s.item?.category?.name).filter(Boolean)
+  const lowStockItems = stocks.filter((s) => s.quantity <= (s.lowAlert || 0));
+
+  // ✅ Use category.name safely
+  const activeCategorySet = new Set(
+    stocks
+      .map((s) => s.category?.name)
+      .filter((name) => name && name !== "Uncategorized")
   );
 
+  // 📊 Bar chart data
   const barData = stocks.map((s) => ({
-    name: s.item?.name || "Unnamed",
+    name: s.name || "Unnamed",
     quantity: s.quantity,
   }));
 
-  const categoryCounts = {};
+  // 📉 Low stock pie chart data
+  const lowStockCategoryCounts = {};
   lowStockItems.forEach((s) => {
-    const cat = s.item?.category?.name || "Uncategorized";
-    categoryCounts[cat] = (categoryCounts[cat] || 0) + 1;
+    const cat = s.category?.name || "Uncategorized";
+    lowStockCategoryCounts[cat] = (lowStockCategoryCounts[cat] || 0) + 1;
   });
-  const pieData = Object.entries(categoryCounts).map(([name, value]) => ({
-    name,
-    value,
-  }));
+
+  const pieData = Object.entries(lowStockCategoryCounts).map(
+    ([name, value]) => ({
+      name,
+      value,
+    })
+  );
 
   return (
     <div className="p-6">
@@ -85,9 +92,10 @@ const Dashboard = () => {
         <StatCard title="Total Items" value={stocks.length} />
         <StatCard title="Total Stock" value={totalQty} />
         <StatCard title="Low Stock Items" value={lowStockItems.length} />
-        <StatCard title="Active Categories" value={activeCategories.size} />
+        <StatCard title="Active Categories" value={activeCategorySet.size} />
       </div>
 
+      {/* ✅ Order Counters */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
         <StatCard title="Sales Orders" value={salesOrdersCount} />
         <StatCard title="Delivery Challans" value={challanCount} />
@@ -128,7 +136,6 @@ const Dashboard = () => {
                   cx="50%"
                   cy="50%"
                   outerRadius={100}
-                  fill="#FF8042"
                   label>
                   {pieData.map((entry, index) => (
                     <Cell
@@ -152,7 +159,7 @@ const Dashboard = () => {
 
 export default Dashboard;
 
-// ✅ Mini Stat Card
+// ✅ Reusable Stat Card
 const StatCard = ({ title, value }) => (
   <div className="bg-white rounded shadow p-4">
     <p className="text-gray-500 text-sm">{title}</p>

@@ -1,5 +1,3 @@
-// pages/inventory/stock/CurrentStock.jsx
-
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 
@@ -34,6 +32,7 @@ const CurrentStock = () => {
             <th className="border p-2">Available Qty</th>
             <th className="border p-2">Unit</th>
             <th className="border p-2">Low Alert</th>
+            <th className="border p-2">Category</th>
           </tr>
         </thead>
         <tbody>
@@ -49,6 +48,9 @@ const CurrentStock = () => {
               </td>
               <td className="border p-2">{item.unit}</td>
               <td className="border p-2">{item.lowAlert}</td>
+              <td className="border p-2">
+                {item.category?.name || "Uncategorized"}
+              </td>
             </tr>
           ))}
         </tbody>

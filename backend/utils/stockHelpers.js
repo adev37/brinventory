@@ -1,16 +1,24 @@
+// === File: utils/stockHelpers.js ===
 import Stock from "../models/Stock.js";
 import StockLedger from "../models/StockLedger.js";
+import mongoose from "mongoose";
 
-// 📥 INCREASE STOCK (with warehouse-aware logic)
+// 📥 INCREASE STOCK
 export const increaseStock = async (
   itemId,
   quantity,
-  source = "System",
-  sourceId = null,
-  warehouseId = null
+  operation = "System",
+  referenceId = null,
+  warehouseId = null,
+  createdBy = null,
+  remarks = "",
+  refNo = "-"
 ) => {
-  const query = { item: itemId };
-  if (warehouseId) query.warehouse = warehouseId;
+  if (!itemId || !quantity || !warehouseId) {
+    throw new Error("Missing required fields for stock increase");
+  }
+
+  const query = { item: itemId, warehouse: warehouseId };
 
   let stock = await Stock.findOne(query);
 
@@ -18,7 +26,7 @@ export const increaseStock = async (
     stock = new Stock({
       item: itemId,
       quantity,
-      ...(warehouseId && { warehouse: warehouseId }),
+      warehouse: warehouseId,
     });
   } else {
     stock.quantity += quantity;
@@ -26,34 +34,46 @@ export const increaseStock = async (
 
   await stock.save();
 
-  await StockLedger.create({
+  const ledgerEntry = {
     item: itemId,
+    warehouse: warehouseId,
+    operation,
     transactionType: "IN",
     quantity,
-    source,
-    sourceId,
-    ...(warehouseId && { warehouse: warehouseId }),
-    timestamp: new Date(),
-  });
+    referenceId,
+    refNo,
+    remarks,
+    date: new Date(),
+  };
+
+  if (createdBy && mongoose.Types.ObjectId.isValid(createdBy)) {
+    ledgerEntry.createdBy = createdBy;
+  }
+
+  await StockLedger.create(ledgerEntry);
 };
 
-// 📤 DECREASE STOCK (with warehouse-aware logic)
+// 📤 DECREASE STOCK
 export const decreaseStock = async (
   itemId,
   quantity,
-  source = "System",
-  sourceId = null,
-  warehouseId = null
+  operation = "System",
+  referenceId = null,
+  warehouseId = null,
+  createdBy = null,
+  remarks = "",
+  refNo = "-"
 ) => {
-  const query = { item: itemId };
-  if (warehouseId) query.warehouse = warehouseId;
+  if (!itemId || !quantity || !warehouseId) {
+    throw new Error("Missing required fields for stock decrease");
+  }
+
+  const query = { item: itemId, warehouse: warehouseId };
 
   const stock = await Stock.findOne(query);
 
   if (!stock || stock.quantity < quantity) {
-    const error = new Error(
-      "Insufficient stock" + (warehouseId ? " in selected warehouse" : "")
-    );
+    const error = new Error("Insufficient stock in selected warehouse");
     error.code = "INSUFFICIENT_STOCK";
     throw error;
   }
@@ -61,13 +81,21 @@ export const decreaseStock = async (
   stock.quantity -= quantity;
   await stock.save();
 
-  await StockLedger.create({
+  const ledgerEntry = {
     item: itemId,
+    warehouse: warehouseId,
+    operation,
     transactionType: "OUT",
     quantity,
-    source,
-    sourceId,
-    ...(warehouseId && { warehouse: warehouseId }),
-    timestamp: new Date(),
-  });
+    referenceId,
+    refNo,
+    remarks,
+    date: new Date(),
+  };
+
+  if (createdBy && mongoose.Types.ObjectId.isValid(createdBy)) {
+    ledgerEntry.createdBy = createdBy;
+  }
+
+  await StockLedger.create(ledgerEntry);
 };

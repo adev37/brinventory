@@ -16,16 +16,20 @@ const TransferStock = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      const [itemRes, whRes] = await Promise.all([
-        axios.get("http://localhost:5000/api/items", {
-          headers: { Authorization: `Bearer ${token}` },
-        }),
-        axios.get("http://localhost:5000/api/warehouses", {
-          headers: { Authorization: `Bearer ${token}` },
-        }),
-      ]);
-      setItems(itemRes.data);
-      setWarehouses(whRes.data);
+      try {
+        const [itemRes, whRes] = await Promise.all([
+          axios.get("http://localhost:5000/api/items", {
+            headers: { Authorization: `Bearer ${token}` },
+          }),
+          axios.get("http://localhost:5000/api/warehouses", {
+            headers: { Authorization: `Bearer ${token}` },
+          }),
+        ]);
+        setItems(itemRes.data);
+        setWarehouses(whRes.data);
+      } catch (err) {
+        console.error("Error fetching data:", err);
+      }
     };
 
     fetchData();
@@ -41,7 +45,7 @@ const TransferStock = () => {
       itemId: form.item,
       fromWarehouseId: form.fromWarehouse,
       toWarehouseId: form.toWarehouse,
-      quantity: Number(form.quantity), // ensure it's a number
+      quantity: Number(form.quantity), // Ensure numeric
       remarks: form.remarks,
     };
 

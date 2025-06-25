@@ -1,40 +1,60 @@
 import StockAdjustment from "../models/StockAdjustment.js";
-import StockLedger from "../models/StockLedger.js";
-import { increaseStock, decreaseStock } from "./stockController.js";
+import { increaseStock, decreaseStock } from "../utils/stockHelpers.js";
 
 // ✅ Create Stock Adjustment
 export const createAdjustment = async (req, res) => {
   try {
-    const { item, adjustmentType, quantity, reason } = req.body;
+    const { item, adjustmentType, quantity, reason, warehouse } = req.body;
 
-    // 🔄 Update item stock
-    if (adjustmentType === "increase") {
-      await increaseStock(item, quantity);
-    } else if (adjustmentType === "decrease") {
-      await decreaseStock(item, quantity);
-    } else {
-      return res.status(400).json({ message: "Invalid adjustment type." });
+    // 🔒 Validate required fields
+    if (!item || !adjustmentType || !quantity || !reason || !warehouse) {
+      return res
+        .status(400)
+        .json({ message: "All fields are required including warehouse." });
     }
 
-    // 📄 Create adjustment entry
+    // 📝 Create the adjustment record
     const adjustment = await StockAdjustment.create({
       item,
       adjustmentType,
       quantity,
       reason,
+      warehouse,
       adjustedBy: req.user?._id || null,
       adjustedAt: new Date(),
     });
 
-    // 📘 Log to stock ledger
-    await StockLedger.create({
-      item,
-      transactionType: "ADJUST",
-      quantity,
-      source: "StockAdjustment",
-      sourceId: adjustment._id,
-      timestamp: new Date(),
-    });
+    // 📄 Ledger reference and audit actor
+    const refNo = `ADJ#${adjustment._id.toString().slice(-4)}`;
+    const actor = req.user?.name || "System";
+    const userId = req.user?._id || null;
+
+    // 🔁 Perform stock mutation and log in ledger
+    if (adjustmentType === "increase") {
+      await increaseStock(
+        item,
+        quantity,
+        "Stock Adjustment",
+        adjustment._id,
+        warehouse,
+        userId,
+        reason,
+        refNo
+      );
+    } else if (adjustmentType === "decrease") {
+      await decreaseStock(
+        item,
+        quantity,
+        "Stock Adjustment",
+        adjustment._id,
+        warehouse,
+        userId,
+        reason,
+        refNo
+      );
+    } else {
+      return res.status(400).json({ message: "Invalid adjustment type" });
+    }
 
     res.status(201).json({
       message: "✅ Stock adjustment successful.",

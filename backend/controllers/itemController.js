@@ -16,8 +16,10 @@ export const createItem = async (req, res) => {
       pricePerUnit,
       lowStockThreshold,
       gst,
+      warehouse, // ✅ required
     } = req.body;
 
+    // 🔍 Check for duplicate SKU
     const exists = await Item.findOne({ sku });
     if (exists) {
       return res
@@ -25,32 +27,38 @@ export const createItem = async (req, res) => {
         .json({ message: "Item with this SKU already exists" });
     }
 
-    // Create Item
+    // ✅ Create Item
     const item = new Item({
       name,
       sku,
       unit,
       category,
       description,
-      pricePerUnit,
-      lowStockThreshold,
-      gst,
+      pricePerUnit: Number(pricePerUnit) || 0,
+      gst: Number(gst) || 0,
+      lowStockThreshold: Number(lowStockThreshold) || 5,
       createdBy: req.user?._id || null,
     });
 
     const savedItem = await item.save();
 
-    // ✅ Create initial Stock entry with 0 quantity
+    // ✅ Create initial Stock entry (include warehouse!)
     await new Stock({
       item: savedItem._id,
+      warehouse, // ✅ This fixes the validation error
       quantity: 0,
       lastUpdatedBy: req.user?.name || "System",
       remarks: "Initial stock entry created with 0 quantity",
     }).save();
 
+    // 🟢 Return clean response
     res.status(201).json(savedItem);
   } catch (error) {
-    res.status(500).json({ message: "Failed to create item", error });
+    console.error("❌ Failed to create item:", error);
+    res.status(500).json({
+      message: "Failed to create item",
+      error: error?.message || "Unknown server error",
+    });
   }
 };
 // @desc    Bulk add items (with initial stock as 0)

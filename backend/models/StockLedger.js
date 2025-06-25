@@ -1,3 +1,4 @@
+// === File: models/StockLedger.js ===
 import mongoose from "mongoose";
 
 const stockLedgerSchema = new mongoose.Schema({
@@ -6,34 +7,58 @@ const stockLedgerSchema = new mongoose.Schema({
     ref: "Item",
     required: true,
   },
+  warehouse: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Warehouse",
+    required: true,
+  },
+  operation: {
+    type: String,
+    enum: [
+      "GRN",
+      "Delivery Challan",
+      "Sales Return",
+      "Purchase Return",
+      "Stock Adjustment",
+      "Transfer IN",
+      "Transfer OUT",
+      "Manual",
+    ],
+    required: true,
+  },
   transactionType: {
     type: String,
-    enum: ["IN", "OUT", "ADJUST", "RETURN"],
+    enum: ["IN", "OUT"], // ✅ Add this field to indicate flow direction
     required: true,
   },
   quantity: {
     type: Number,
     required: true,
   },
-  source: {
-    type: String, // e.g., 'GoodsReceipt', 'DeliveryChallan', etc.
-    required: true,
-  },
-  warehouse: {
+  referenceId: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "Warehouse",
-    required: true,
+    default: null,
   },
-  sourceId: {
+  refNo: {
+    type: String,
+    default: function () {
+      return `REF-${Date.now()}`;
+    },
+  },
+  remarks: {
+    type: String,
+    default: "",
+  },
+  createdBy: {
     type: mongoose.Schema.Types.ObjectId,
-    required: true,
+    ref: "User",
+    required: false,
   },
-  timestamp: {
+  date: {
     type: Date,
     default: Date.now,
   },
 });
 
 const StockLedger = mongoose.model("StockLedger", stockLedgerSchema);
-
 export default StockLedger;

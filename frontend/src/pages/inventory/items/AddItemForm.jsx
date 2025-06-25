@@ -21,6 +21,7 @@ const AddItemForm = ({ fetchItems, editItem, setEditItem }) => {
     sku: "",
     unit: "",
     category: "",
+    warehouse: "",
     description: "",
     pricePerUnit: "",
     gst: "",
@@ -29,17 +30,21 @@ const AddItemForm = ({ fetchItems, editItem, setEditItem }) => {
 
   const [categories, setCategories] = useState([]);
   const [units, setUnits] = useState([]);
+  const [warehouses, setWarehouses] = useState([]);
   const token = localStorage.getItem("token");
 
   useEffect(() => {
     fetchCategories();
     fetchUnits();
+    fetchWarehouses();
+
     if (editItem) {
       setFormData({
         ...editItem,
         category: editItem?.category?._id || "",
         unit: editItem.unit || "",
         gst: editItem.gst || "",
+        warehouse: editItem.warehouse || "", // For edit mode (optional)
       });
     } else {
       resetForm();
@@ -68,12 +73,24 @@ const AddItemForm = ({ fetchItems, editItem, setEditItem }) => {
     }
   };
 
+  const fetchWarehouses = async () => {
+    try {
+      const res = await axios.get("http://localhost:5000/api/warehouses", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setWarehouses(res.data);
+    } catch {
+      toast.error("❌ Failed to load warehouses");
+    }
+  };
+
   const resetForm = () => {
     setFormData({
       name: "",
       sku: "",
       unit: "",
       category: "",
+      warehouse: "",
       description: "",
       pricePerUnit: "",
       gst: "",
@@ -93,6 +110,8 @@ const AddItemForm = ({ fetchItems, editItem, setEditItem }) => {
     const payload = {
       ...formData,
       gst: Number(formData.gst),
+      pricePerUnit: Number(formData.pricePerUnit),
+      lowStockThreshold: Number(formData.lowStockThreshold),
       updatedBy: user?.name || "Unknown",
     };
 
@@ -174,7 +193,7 @@ const AddItemForm = ({ fetchItems, editItem, setEditItem }) => {
         </select>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
         <select
           name="unit"
           value={formData.unit}
@@ -201,11 +220,26 @@ const AddItemForm = ({ fetchItems, editItem, setEditItem }) => {
             </option>
           ))}
         </select>
+
+        <select
+          name="warehouse"
+          value={formData.warehouse}
+          onChange={handleChange}
+          className="border p-3 rounded w-full"
+          required>
+          <option value="">🏬 Select Warehouse</option>
+          {warehouses.map((wh) => (
+            <option key={wh._id} value={wh._id}>
+              {wh.name}
+            </option>
+          ))}
+        </select>
       </div>
 
       <div className="mt-4">
         <input
           name="lowStockThreshold"
+          type="number"
           value={formData.lowStockThreshold}
           onChange={handleChange}
           placeholder="Low Stock Threshold"

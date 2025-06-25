@@ -1,8 +1,11 @@
+// === File: backend/controllers/goodsReceiptController.js ===
+
 import GoodsReceipt from "../models/GoodsReceipt.js";
 import PurchaseOrder from "../models/PurchaseOrder.js";
-import { increaseStock } from "./stockController.js";
 import PurchaseReturn from "../models/PurchaseReturn.js";
 import Warehouse from "../models/Warehouse.js";
+import { increaseStock } from "../utils/stockHelpers.js"; // ✅ already handles ledger
+import mongoose from "mongoose";
 
 export const createGoodsReceipt = async (req, res) => {
   try {
@@ -49,18 +52,9 @@ export const createGoodsReceipt = async (req, res) => {
           message: `Receiving ${r.receivedQty} of item ${itemId} exceeds ordered qty`,
         });
       }
-
-      // ✅ Update warehouse-aware stock
-      await increaseStock(
-        r.item,
-        r.receivedQty,
-        "GoodsReceipt",
-        null,
-        warehouseId
-      );
     }
 
-    // 5. Create GRN
+    // 5. Create GRN first
     const receipt = new GoodsReceipt({
       purchaseOrder,
       receivedItems,
@@ -70,7 +64,21 @@ export const createGoodsReceipt = async (req, res) => {
     });
     await receipt.save();
 
-    // 6. Update PO status
+    // 6. Increase stock and auto-log in StockLedger via `increaseStock`
+    for (const r of receivedItems) {
+      await increaseStock(
+        r.item,
+        r.receivedQty,
+        "GRN",
+        receipt._id,
+        warehouseId,
+        createdBy,
+        remarks || `Received from PO ${po.poNumber}`,
+        `GRN#${receipt._id.toString().slice(-4)}`
+      );
+    }
+
+    // 7. Update PO status
     let totalOrdered = 0;
     let totalReceived = 0;
     for (const item of po.items) {
@@ -90,7 +98,7 @@ export const createGoodsReceipt = async (req, res) => {
     await po.save();
 
     return res.status(201).json({
-      message: "✅ Goods received successfully and stock updated.",
+      message: "✅ Goods received and stock updated.",
       receipt,
     });
   } catch (error) {
@@ -102,6 +110,7 @@ export const createGoodsReceipt = async (req, res) => {
   }
 };
 
+// 📄 GET all GRNs
 export const getAllReceipts = async (req, res) => {
   try {
     const receipts = await GoodsReceipt.find()
@@ -121,7 +130,7 @@ export const getAllReceipts = async (req, res) => {
   }
 };
 
-// GET /api/goods-receipts/:id
+// 📄 GET single GRN by ID
 export const getReceiptById = async (req, res) => {
   try {
     const { id } = req.params;
@@ -147,16 +156,15 @@ export const getReceiptById = async (req, res) => {
   }
 };
 
+// 📦 GET GRNs eligible for Purchase Return
 export const getPendingReturnGRNs = async (req, res) => {
   try {
-    // Step 1: Load all GRNs and all purchase returns
     const grns = await GoodsReceipt.find()
       .populate("purchaseOrder")
       .populate("receivedItems.item");
 
     const returns = await PurchaseReturn.find();
 
-    // Step 2: Build map of returned quantities for each item per GRN
     const grnReturnMap = {};
     for (const ret of returns) {
       if (!ret.grn || !Array.isArray(ret.returnedItems)) continue;
@@ -171,7 +179,6 @@ export const getPendingReturnGRNs = async (req, res) => {
       }
     }
 
-    // Step 3: Enrich GRNs by keeping only items with remainingQty > 0
     const eligibleGRNs = grns
       .map((grn) => {
         const grnId = grn._id.toString();
@@ -191,7 +198,7 @@ export const getPendingReturnGRNs = async (req, res) => {
               remainingQty,
             };
           })
-          .filter(Boolean); // remove items with 0 remaining
+          .filter(Boolean);
 
         if (updatedItems.length === 0) return null;
 
@@ -200,9 +207,8 @@ export const getPendingReturnGRNs = async (req, res) => {
           receivedItems: updatedItems,
         };
       })
-      .filter(Boolean); // remove GRNs with no eligible items
+      .filter(Boolean);
 
-    // Step 4: Return enriched GRNs
     res.status(200).json(eligibleGRNs);
   } catch (err) {
     console.error("❌ Error fetching GRNs with pending returns:", err);
