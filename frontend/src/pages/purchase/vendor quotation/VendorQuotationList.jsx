@@ -17,9 +17,12 @@ const VendorQuotationList = () => {
 
   const fetchWarehouses = async () => {
     try {
-      const res = await axios.get("http://localhost:5000/api/warehouses", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const res = await axios.get(
+        "https://brinventorybackend.vercel.app/api/warehouses",
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
       setWarehouses(res.data);
     } catch (err) {
       alert("❌ Failed to fetch warehouses");
@@ -30,7 +33,7 @@ const VendorQuotationList = () => {
   const fetchQuotations = async () => {
     try {
       const res = await axios.get(
-        "http://localhost:5000/api/vendor-quotations",
+        "https://brinventorybackend.vercel.app/api/vendor-quotations",
         {
           headers: { Authorization: `Bearer ${token}` },
         }
@@ -52,7 +55,7 @@ const VendorQuotationList = () => {
 
     try {
       await axios.post(
-        "http://localhost:5000/api/purchase-orders/from-quotation",
+        "https://brinventorybackend.vercel.app/api/purchase-orders/from-quotation",
         {
           quotationId,
           deliveryDate,

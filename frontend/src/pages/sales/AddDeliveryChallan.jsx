@@ -18,12 +18,15 @@ const AddDeliveryChallan = () => {
         const token = localStorage.getItem("token");
 
         const [soRes, whRes] = await Promise.all([
-          axios.get("http://localhost:5000/api/sales-orders/undelivered", {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }),
-          axios.get("http://localhost:5000/api/warehouses", {
+          axios.get(
+            "https://brinventorybackend.vercel.app/api/sales-orders/undelivered",
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            }
+          ),
+          axios.get("https://brinventorybackend.vercel.app/api/warehouses", {
             headers: {
               Authorization: `Bearer ${token}`,
             },
@@ -74,9 +77,13 @@ const AddDeliveryChallan = () => {
         transportDetails,
       };
 
-      await axios.post("http://localhost:5000/api/delivery-challans", payload, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      await axios.post(
+        "https://brinventorybackend.vercel.app/api/delivery-challans",
+        payload,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
 
       alert("✅ Delivery Challan Created");
       navigate("/delivery-challans");

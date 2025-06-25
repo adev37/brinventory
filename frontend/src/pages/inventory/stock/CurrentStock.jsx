@@ -8,9 +8,12 @@ const CurrentStock = () => {
   useEffect(() => {
     const fetchStock = async () => {
       try {
-        const res = await axios.get("http://localhost:5000/api/stocks", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        const res = await axios.get(
+          "https://brinventorybackend.vercel.app/api/stocks",
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
         setStock(res.data);
       } catch (err) {
         console.error("Failed to fetch stock", err);

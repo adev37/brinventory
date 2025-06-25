@@ -24,7 +24,7 @@ const AddSalesInvoice = ({ fetchInvoices }) => {
   const fetchDeliveryChallans = async () => {
     try {
       const res = await axios.get(
-        "http://localhost:5000/api/sales-invoices/available-dcs",
+        "https://brinventorybackend.vercel.app/api/sales-invoices/available-dcs",
         {
           headers: { Authorization: `Bearer ${token}` },
         }
@@ -39,7 +39,7 @@ const AddSalesInvoice = ({ fetchInvoices }) => {
   const generateInvoiceNumber = async () => {
     try {
       const res = await axios.get(
-        "http://localhost:5000/api/sales-invoices/next-number",
+        "https://brinventorybackend.vercel.app/api/sales-invoices/next-number",
         {
           headers: { Authorization: `Bearer ${token}` },
         }
@@ -52,9 +52,12 @@ const AddSalesInvoice = ({ fetchInvoices }) => {
 
   const fetchWarehouses = async () => {
     try {
-      const res = await axios.get("http://localhost:5000/api/warehouses", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const res = await axios.get(
+        "https://brinventorybackend.vercel.app/api/warehouses",
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
       setWarehouses(res.data);
     } catch (err) {
       toast.error("❌ Failed to fetch warehouses");
@@ -99,9 +102,13 @@ const AddSalesInvoice = ({ fetchInvoices }) => {
         warehouse: warehouseId,
       };
 
-      await axios.post("http://localhost:5000/api/sales-invoices", payload, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      await axios.post(
+        "https://brinventorybackend.vercel.app/api/sales-invoices",
+        payload,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
 
       toast.success("✅ Sales Invoice Created");
 

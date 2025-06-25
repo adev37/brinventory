@@ -7,7 +7,7 @@ const PurchaseOrderList = () => {
 
   useEffect(() => {
     axios
-      .get("http://localhost:5000/api/purchase-orders")
+      .get("https://brinventorybackend.vercel.app/api/purchase-orders")
       .then((res) => {
         // ✅ Ensure it's an array
         const data = Array.isArray(res.data)

@@ -8,7 +8,9 @@ const GRNList = () => {
   useEffect(() => {
     const fetchGRNs = async () => {
       try {
-        const res = await axios.get("http://localhost:5000/api/goods-receipts"); // ✅ Corrected route
+        const res = await axios.get(
+          "https://brinventorybackend.vercel.app/api/goods-receipts"
+        ); // ✅ Corrected route
         setGrns(res.data);
       } catch (error) {
         console.error("Error fetching GRNs:", error);

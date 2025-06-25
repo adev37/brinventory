@@ -18,10 +18,10 @@ const TransferStock = () => {
     const fetchData = async () => {
       try {
         const [itemRes, whRes] = await Promise.all([
-          axios.get("http://localhost:5000/api/items", {
+          axios.get("https://brinventorybackend.vercel.app/api/items", {
             headers: { Authorization: `Bearer ${token}` },
           }),
-          axios.get("http://localhost:5000/api/warehouses", {
+          axios.get("https://brinventorybackend.vercel.app/api/warehouses", {
             headers: { Authorization: `Bearer ${token}` },
           }),
         ]);
@@ -50,9 +50,13 @@ const TransferStock = () => {
     };
 
     try {
-      await axios.post("http://localhost:5000/api/stocks/transfer", payload, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      await axios.post(
+        "https://brinventorybackend.vercel.app/api/stocks/transfer",
+        payload,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
       alert("✅ Stock transferred successfully!");
       setForm({
         item: "",

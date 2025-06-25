@@ -8,9 +8,12 @@ const AddCategoryForm = () => {
 
   const fetchCategories = async () => {
     try {
-      const res = await axios.get("http://localhost:5000/api/categories", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const res = await axios.get(
+        "https://brinventorybackend.vercel.app/api/categories",
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
       setCategories(res.data);
     } catch (err) {
       alert("❌ Failed to load categories");
@@ -21,7 +24,7 @@ const AddCategoryForm = () => {
     e.preventDefault();
     try {
       await axios.post(
-        "http://localhost:5000/api/categories",
+        "https://brinventorybackend.vercel.app/api/categories",
         { name },
         { headers: { Authorization: `Bearer ${token}` } }
       );

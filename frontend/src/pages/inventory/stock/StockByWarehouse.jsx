@@ -12,15 +12,18 @@ const StockByWarehouse = () => {
   }, []);
 
   const fetchWarehouses = async () => {
-    const res = await axios.get("http://localhost:5000/api/warehouses", {
-      headers: { Authorization: `Bearer ${token}` },
-    });
+    const res = await axios.get(
+      "https://brinventorybackend.vercel.app/api/warehouses",
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      }
+    );
     setWarehouses(res.data);
   };
 
   const fetchStock = async (warehouseId) => {
     const res = await axios.get(
-      `http://localhost:5000/api/stocks/by-warehouse?warehouseId=${warehouseId}`,
+      `https://brinventorybackend.vercel.app/api/stocks/by-warehouse?warehouseId=${warehouseId}`,
       {
         headers: { Authorization: `Bearer ${token}` },
       }

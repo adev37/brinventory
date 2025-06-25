@@ -17,14 +17,14 @@ const AddPurchaseOrder = () => {
     const token = localStorage.getItem("token");
 
     axios
-      .get("http://localhost:5000/api/vendors", {
+      .get("https://brinventorybackend.vercel.app/api/vendors", {
         headers: { Authorization: `Bearer ${token}` },
       })
       .then((res) => setVendors(Array.isArray(res.data) ? res.data : []))
       .catch(() => alert("Failed to load vendors"));
 
     axios
-      .get("http://localhost:5000/api/items", {
+      .get("https://brinventorybackend.vercel.app/api/items", {
         headers: { Authorization: `Bearer ${token}` },
       })
       .then((res) => setItems(Array.isArray(res.data) ? res.data : []))
@@ -83,9 +83,13 @@ const AddPurchaseOrder = () => {
     const token = localStorage.getItem("token");
 
     try {
-      await axios.post("http://localhost:5000/api/purchase-orders", poData, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      await axios.post(
+        "https://brinventorybackend.vercel.app/api/purchase-orders",
+        poData,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
       alert("✅ Purchase Order Created!");
 
       setVendorId("");

@@ -16,7 +16,7 @@ const AddSalesReturn = () => {
     const fetchEligibleInvoices = async () => {
       try {
         const res = await axios.get(
-          "http://localhost:5000/api/sales-returns/eligible-invoices",
+          "https://brinventorybackend.vercel.app/api/sales-returns/eligible-invoices",
           {
             headers: { Authorization: `Bearer ${token}` },
           }
@@ -29,9 +29,12 @@ const AddSalesReturn = () => {
 
     const fetchWarehouses = async () => {
       try {
-        const res = await axios.get("http://localhost:5000/api/warehouses", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        const res = await axios.get(
+          "https://brinventorybackend.vercel.app/api/warehouses",
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
         setWarehouses(res.data || []);
       } catch (err) {
         console.error("❌ Error loading warehouses:", err);
@@ -67,7 +70,7 @@ const AddSalesReturn = () => {
 
     try {
       await axios.post(
-        "http://localhost:5000/api/sales-returns",
+        "https://brinventorybackend.vercel.app/api/sales-returns",
         {
           referenceId: selectedInvoiceId,
           items: selectedItems.map(({ item, quantity }) => ({

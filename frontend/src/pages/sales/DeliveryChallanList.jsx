@@ -6,7 +6,7 @@ const DeliveryChallanList = () => {
 
   useEffect(() => {
     axios
-      .get("http://localhost:5000/api/delivery-challans")
+      .get("https://brinventorybackend.vercel.app/api/delivery-challans")
       .then((res) => setChallans(res.data || []))
       .catch((err) => console.error("Error loading challans:", err));
   }, []);

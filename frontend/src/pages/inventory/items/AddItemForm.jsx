@@ -53,9 +53,12 @@ const AddItemForm = ({ fetchItems, editItem, setEditItem }) => {
 
   const fetchCategories = async () => {
     try {
-      const res = await axios.get("http://localhost:5000/api/categories", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const res = await axios.get(
+        "https://brinventorybackend.vercel.app/api/categories",
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
       setCategories(res.data);
     } catch {
       toast.error("❌ Failed to load categories");
@@ -64,9 +67,12 @@ const AddItemForm = ({ fetchItems, editItem, setEditItem }) => {
 
   const fetchUnits = async () => {
     try {
-      const res = await axios.get("http://localhost:5000/api/units", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const res = await axios.get(
+        "https://brinventorybackend.vercel.app/api/units",
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
       setUnits(res.data);
     } catch {
       toast.error("❌ Failed to load units");
@@ -75,9 +81,12 @@ const AddItemForm = ({ fetchItems, editItem, setEditItem }) => {
 
   const fetchWarehouses = async () => {
     try {
-      const res = await axios.get("http://localhost:5000/api/warehouses", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const res = await axios.get(
+        "https://brinventorybackend.vercel.app/api/warehouses",
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
       setWarehouses(res.data);
     } catch {
       toast.error("❌ Failed to load warehouses");
@@ -118,7 +127,7 @@ const AddItemForm = ({ fetchItems, editItem, setEditItem }) => {
     try {
       if (editItem) {
         await axios.put(
-          `http://localhost:5000/api/items/${editItem._id}`,
+          `https://brinventorybackend.vercel.app/api/items/${editItem._id}`,
           payload,
           {
             headers: { Authorization: `Bearer ${token}` },
@@ -127,9 +136,13 @@ const AddItemForm = ({ fetchItems, editItem, setEditItem }) => {
         toast.success("✅ Item updated successfully");
         setEditItem(null);
       } else {
-        await axios.post("http://localhost:5000/api/items", payload, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        await axios.post(
+          "https://brinventorybackend.vercel.app/api/items",
+          payload,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
         toast.success("✅ Item added successfully");
       }
 

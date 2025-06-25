@@ -11,9 +11,12 @@ const SalesInvoiceList = () => {
   const fetchInvoices = async () => {
     try {
       const token = localStorage.getItem("token");
-      const res = await axios.get("http://localhost:5000/api/sales-invoices", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const res = await axios.get(
+        "https://brinventorybackend.vercel.app/api/sales-invoices",
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
       setInvoices(res.data);
     } catch (err) {
       console.error("❌ Failed to fetch invoices:", err);

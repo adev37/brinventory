@@ -15,9 +15,12 @@ const ClientList = () => {
 
   const fetchClients = async () => {
     try {
-      const res = await axios.get("http://localhost:5000/api/clients", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const res = await axios.get(
+        "https://brinventorybackend.vercel.app/api/clients",
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
       setClients(res.data);
     } catch (err) {
       alert("Failed to load clients ❌");
@@ -30,9 +33,12 @@ const ClientList = () => {
 
   const handleDelete = async (id) => {
     if (window.confirm("Delete this client?")) {
-      await axios.delete(`http://localhost:5000/api/clients/${id}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      await axios.delete(
+        `https://brinventorybackend.vercel.app/api/clients/${id}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
       fetchClients();
     }
   };

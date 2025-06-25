@@ -5,11 +5,14 @@ export const fetchWarehouses = async () => {
   try {
     const token = localStorage.getItem("token");
 
-    const res = await axios.get("http://localhost:5000/api/warehouses", {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+    const res = await axios.get(
+      "https://brinventorybackend.vercel.app/api/warehouses",
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
 
     return res.data;
   } catch (err) {

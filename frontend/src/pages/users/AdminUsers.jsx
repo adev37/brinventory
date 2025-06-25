@@ -8,9 +8,12 @@ function AdminUsers() {
   const token = localStorage.getItem("token");
 
   const fetchUsers = async () => {
-    const res = await axios.get("http://localhost:5000/api/users", {
-      headers: { Authorization: `Bearer ${token}` },
-    });
+    const res = await axios.get(
+      "https://brinventorybackend.vercel.app/api/users",
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      }
+    );
     setUsers(res.data);
   };
 
@@ -23,7 +26,7 @@ function AdminUsers() {
       setEditForm((prev) => ({ ...prev, active: !prev.active }));
     } else {
       await axios.put(
-        `http://localhost:5000/api/users/${user._id}`,
+        `https://brinventorybackend.vercel.app/api/users/${user._id}`,
         { active: !user.active },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -48,7 +51,7 @@ function AdminUsers() {
 
   const saveEdit = async (userId) => {
     const res = await axios.put(
-      `http://localhost:5000/api/users/${userId}`,
+      `https://brinventorybackend.vercel.app/api/users/${userId}`,
       editForm,
       {
         headers: { Authorization: `Bearer ${token}` },

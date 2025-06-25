@@ -42,7 +42,7 @@ const AddVendorForm = ({
     try {
       if (editingId) {
         await axios.put(
-          `http://localhost:5000/api/vendors/${editingId}`,
+          `https://brinventorybackend.vercel.app/api/vendors/${editingId}`,
           formData,
           {
             headers: { Authorization: `Bearer ${token}` },
@@ -50,9 +50,13 @@ const AddVendorForm = ({
         );
         alert("✅ Vendor updated successfully!");
       } else {
-        await axios.post("http://localhost:5000/api/vendors", formData, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        await axios.post(
+          "https://brinventorybackend.vercel.app/api/vendors",
+          formData,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
         alert("✅ Vendor added successfully!");
       }
 

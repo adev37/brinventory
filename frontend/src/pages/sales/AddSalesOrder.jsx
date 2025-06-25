@@ -19,10 +19,10 @@ const AddSalesOrder = () => {
       const token = localStorage.getItem("token");
       try {
         const [clientRes, itemRes] = await Promise.all([
-          axios.get("http://localhost:5000/api/clients", {
+          axios.get("https://brinventorybackend.vercel.app/api/clients", {
             headers: { Authorization: `Bearer ${token}` },
           }),
-          axios.get("http://localhost:5000/api/items", {
+          axios.get("https://brinventorybackend.vercel.app/api/items", {
             headers: { Authorization: `Bearer ${token}` },
           }),
         ]);
@@ -100,11 +100,15 @@ const AddSalesOrder = () => {
     };
 
     try {
-      await axios.post("http://localhost:5000/api/sales-orders", payload, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      });
+      await axios.post(
+        "https://brinventorybackend.vercel.app/api/sales-orders",
+        payload,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
       alert("✅ Sales Order Created");
       navigate("/sales-orders");
     } catch (err) {

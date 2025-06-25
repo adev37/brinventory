@@ -20,7 +20,7 @@ const AddWarehouse = () => {
     try {
       const token = localStorage.getItem("token");
       const res = await axios.post(
-        "http://localhost:5000/api/warehouses",
+        "https://brinventorybackend.vercel.app/api/warehouses",
         formData,
         {
           headers: {

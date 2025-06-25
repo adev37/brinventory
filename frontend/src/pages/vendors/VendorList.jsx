@@ -15,9 +15,12 @@ const VendorList = () => {
 
   const fetchVendors = async () => {
     try {
-      const res = await axios.get("http://localhost:5000/api/vendors", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const res = await axios.get(
+        "https://brinventorybackend.vercel.app/api/vendors",
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
       setVendors(res.data);
     } catch (err) {
       alert("Failed to load vendors ❌");
@@ -40,9 +43,12 @@ const VendorList = () => {
 
   const handleDelete = async (id) => {
     if (window.confirm("Delete this vendor?")) {
-      await axios.delete(`http://localhost:5000/api/vendors/${id}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      await axios.delete(
+        `https://brinventorybackend.vercel.app/api/vendors/${id}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
       fetchVendors();
     }
   };

@@ -27,9 +27,12 @@ const ItemList = () => {
   const fetchItems = async () => {
     try {
       setLoading(true);
-      const res = await axios.get("http://localhost:5000/api/items", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const res = await axios.get(
+        "https://brinventorybackend.vercel.app/api/items",
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
       setItems(res.data);
       setFilteredItems(res.data);
     } catch (err) {
@@ -41,9 +44,12 @@ const ItemList = () => {
 
   const fetchCategories = async () => {
     try {
-      const res = await axios.get("http://localhost:5000/api/categories", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const res = await axios.get(
+        "https://brinventorybackend.vercel.app/api/categories",
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
       setCategories(res.data);
     } catch (err) {
       toast.error("Failed to load categories ❌");
@@ -52,9 +58,12 @@ const ItemList = () => {
 
   const fetchUnits = async () => {
     try {
-      const res = await axios.get("http://localhost:5000/api/units", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const res = await axios.get(
+        "https://brinventorybackend.vercel.app/api/units",
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
       setUnits(res.data);
     } catch (err) {
       toast.error("Failed to load units ❌");
@@ -89,9 +98,12 @@ const ItemList = () => {
   const handleDelete = async (id) => {
     if (!window.confirm("Delete this item?")) return;
     try {
-      await axios.delete(`http://localhost:5000/api/items/${id}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      await axios.delete(
+        `https://brinventorybackend.vercel.app/api/items/${id}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
       fetchItems();
     } catch (err) {
       toast.error("Delete failed ❌");

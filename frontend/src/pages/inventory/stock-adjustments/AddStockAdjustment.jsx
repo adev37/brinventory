@@ -17,10 +17,10 @@ const AddStockAdjustment = () => {
   const fetchItemsAndWarehouses = async () => {
     try {
       const [stockRes, warehouseRes] = await Promise.all([
-        axios.get("http://localhost:5000/api/stocks", {
+        axios.get("https://brinventorybackend.vercel.app/api/stocks", {
           headers: { Authorization: `Bearer ${token}` },
         }),
-        axios.get("http://localhost:5000/api/warehouses", {
+        axios.get("https://brinventorybackend.vercel.app/api/warehouses", {
           headers: { Authorization: `Bearer ${token}` },
         }),
       ]);
@@ -49,7 +49,7 @@ const AddStockAdjustment = () => {
       setLoading(true);
 
       await axios.post(
-        "http://localhost:5000/api/stock-adjustments",
+        "https://brinventorybackend.vercel.app/api/stock-adjustments",
         {
           item: selectedItem,
           adjustmentType,

@@ -23,9 +23,12 @@ const AddGRN = () => {
 
   const loadPurchaseOrders = async () => {
     try {
-      const res = await axios.get("http://localhost:5000/api/purchase-orders", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const res = await axios.get(
+        "https://brinventorybackend.vercel.app/api/purchase-orders",
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
 
       const poList = Array.isArray(res.data)
         ? res.data
@@ -44,9 +47,12 @@ const AddGRN = () => {
 
   const loadWarehouses = async () => {
     try {
-      const res = await axios.get("http://localhost:5000/api/warehouses", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const res = await axios.get(
+        "https://brinventorybackend.vercel.app/api/warehouses",
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
 
       setWarehouses(res.data);
     } catch (err) {
@@ -86,7 +92,7 @@ const AddGRN = () => {
 
     try {
       await axios.post(
-        "http://localhost:5000/api/goods-receipts",
+        "https://brinventorybackend.vercel.app/api/goods-receipts",
         {
           purchaseOrder: selectedPO._id,
           receivedItems,

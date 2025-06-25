@@ -35,10 +35,19 @@ const Dashboard = () => {
       const headers = { Authorization: `Bearer ${token}` };
 
       const [stockRes, returnRes, challanRes, salesRes] = await Promise.all([
-        axios.get("http://localhost:5000/api/stocks", { headers }),
-        axios.get("http://localhost:5000/api/sales-returns", { headers }),
-        axios.get("http://localhost:5000/api/delivery-challans", { headers }),
-        axios.get("http://localhost:5000/api/sales-orders", { headers }),
+        axios.get("https://brinventorybackend.vercel.app/api/stocks", {
+          headers,
+        }),
+        axios.get("https://brinventorybackend.vercel.app/api/sales-returns", {
+          headers,
+        }),
+        axios.get(
+          "https://brinventorybackend.vercel.app/api/delivery-challans",
+          { headers }
+        ),
+        axios.get("https://brinventorybackend.vercel.app/api/sales-orders", {
+          headers,
+        }),
       ]);
 
       setStocks(stockRes.data);

@@ -9,7 +9,7 @@ const StockAdjustmentList = () => {
     const fetchAdjustments = async () => {
       const token = localStorage.getItem("token");
       const res = await axios.get(
-        "http://localhost:5000/api/stock-adjustments",
+        "https://brinventorybackend.vercel.app/api/stock-adjustments",
         {
           headers: { Authorization: `Bearer ${token}` },
         }

@@ -9,7 +9,7 @@ const PurchaseReturnList = () => {
     const fetchReturns = async () => {
       try {
         const res = await axios.get(
-          "http://localhost:5000/api/purchase-returns"
+          "https://brinventorybackend.vercel.app/api/purchase-returns"
         );
         setReturns(res.data);
       } catch (err) {

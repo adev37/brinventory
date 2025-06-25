@@ -19,9 +19,13 @@ const AddUserForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.post("http://localhost:5000/api/auth/register", formData, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      await axios.post(
+        "https://brinventorybackend.vercel.app/api/auth/register",
+        formData,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
       alert("✅ User added successfully");
       setFormData({ name: "", email: "", password: "", role: "viewer" });
     } catch (err) {

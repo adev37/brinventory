@@ -19,8 +19,14 @@ const AddPurchaseReturn = () => {
     const fetchGRNsAndReturns = async () => {
       try {
         const [grnsRes, returnsRes] = await Promise.all([
-          axios.get("http://localhost:5000/api/goods-receipts", { headers }),
-          axios.get("http://localhost:5000/api/purchase-returns", { headers }),
+          axios.get(
+            "https://brinventorybackend.vercel.app/api/goods-receipts",
+            { headers }
+          ),
+          axios.get(
+            "https://brinventorybackend.vercel.app/api/purchase-returns",
+            { headers }
+          ),
         ]);
 
         const allGRNs = grnsRes.data;
@@ -52,9 +58,12 @@ const AddPurchaseReturn = () => {
 
     const fetchWarehouses = async () => {
       try {
-        const res = await axios.get("http://localhost:5000/api/warehouses", {
-          headers,
-        });
+        const res = await axios.get(
+          "https://brinventorybackend.vercel.app/api/warehouses",
+          {
+            headers,
+          }
+        );
         setWarehouses(res.data);
       } catch (err) {
         toast.error("❌ Failed to load warehouses");
@@ -72,10 +81,16 @@ const AddPurchaseReturn = () => {
 
     try {
       const [grnRes, returnsRes] = await Promise.all([
-        axios.get(`http://localhost:5000/api/goods-receipts/${grnId}`, {
-          headers,
-        }),
-        axios.get("http://localhost:5000/api/purchase-returns", { headers }),
+        axios.get(
+          `https://brinventorybackend.vercel.app/api/goods-receipts/${grnId}`,
+          {
+            headers,
+          }
+        ),
+        axios.get(
+          "https://brinventorybackend.vercel.app/api/purchase-returns",
+          { headers }
+        ),
       ]);
 
       const grnData = grnRes.data;
@@ -139,9 +154,13 @@ const AddPurchaseReturn = () => {
         createdBy: localStorage.getItem("userId"),
       };
 
-      await axios.post("http://localhost:5000/api/purchase-returns", payload, {
-        headers,
-      });
+      await axios.post(
+        "https://brinventorybackend.vercel.app/api/purchase-returns",
+        payload,
+        {
+          headers,
+        }
+      );
 
       toast.success("✅ Purchase return created!");
       setSelectedGRN("");

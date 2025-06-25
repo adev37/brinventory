@@ -16,10 +16,10 @@ const AddVendorQuotation = () => {
       try {
         const token = localStorage.getItem("token");
         const [vendorRes, itemRes] = await Promise.all([
-          axios.get("http://localhost:5000/api/vendors", {
+          axios.get("https://brinventorybackend.vercel.app/api/vendors", {
             headers: { Authorization: `Bearer ${token}` },
           }),
-          axios.get("http://localhost:5000/api/items", {
+          axios.get("https://brinventorybackend.vercel.app/api/items", {
             headers: { Authorization: `Bearer ${token}` },
           }),
         ]);
@@ -69,7 +69,7 @@ const AddVendorQuotation = () => {
     try {
       const token = localStorage.getItem("token");
       await axios.post(
-        "http://localhost:5000/api/vendor-quotations",
+        "https://brinventorybackend.vercel.app/api/vendor-quotations",
         quotation,
         {
           headers: { Authorization: `Bearer ${token}` },

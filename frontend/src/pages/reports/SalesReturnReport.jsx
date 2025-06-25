@@ -9,9 +9,12 @@ const SalesReturnReport = () => {
     const fetchReturns = async () => {
       try {
         const token = localStorage.getItem("token");
-        const res = await axios.get("http://localhost:5000/api/sales-returns", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        const res = await axios.get(
+          "https://brinventorybackend.vercel.app/api/sales-returns",
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
         setReturns(res.data);
       } catch (err) {
         console.error("Error fetching sales returns:", err);

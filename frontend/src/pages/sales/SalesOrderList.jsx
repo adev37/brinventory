@@ -13,7 +13,7 @@ const SalesOrderList = () => {
     try {
       const token = localStorage.getItem("token");
       const response = await axios.get(
-        "http://localhost:5000/api/sales-orders",
+        "https://brinventorybackend.vercel.app/api/sales-orders",
         {
           headers: { Authorization: `Bearer ${token}` },
         }

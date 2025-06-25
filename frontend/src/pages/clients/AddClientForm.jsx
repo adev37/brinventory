@@ -43,7 +43,7 @@ const AddClientForm = ({
       if (editingId) {
         // 🔁 Update
         await axios.put(
-          `http://localhost:5000/api/clients/${editingId}`,
+          `https://brinventorybackend.vercel.app/api/clients/${editingId}`,
           formData,
           {
             headers: { Authorization: `Bearer ${token}` },
@@ -52,9 +52,13 @@ const AddClientForm = ({
         alert("✅ Client updated successfully!");
       } else {
         // ➕ Create
-        await axios.post("http://localhost:5000/api/clients", formData, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        await axios.post(
+          "https://brinventorybackend.vercel.app/api/clients",
+          formData,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
         alert("✅ Client added successfully!");
       }
 
