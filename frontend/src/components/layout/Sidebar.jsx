@@ -44,20 +44,20 @@ const Sidebar = () => {
           <SidebarDropdown
             icon={<Package className="w-5 h-5" />}
             title="Inventory">
+            <NavLink to="/add-item" className={linkStyle}>
+              ➕ New Item
+            </NavLink>
             <NavLink to="/items" className={linkStyle}>
               📋 Item Master
             </NavLink>
-            <NavLink to="/add-item" className={linkStyle}>
-              ➕ New Item Entry
+            <NavLink to="/stock" className={linkStyle}>
+              📦 Current Stock
+            </NavLink>
+            <NavLink to="/stock-adjustments/add" className={linkStyle}>
+              ⚙️ Stock Adjustment
             </NavLink>
             <NavLink to="/stock-adjustments" className={linkStyle}>
               🧾 Stock Adjustment Log
-            </NavLink>
-            <NavLink to="/stock-adjustments/add" className={linkStyle}>
-              ⚙️ Stock Adjustments
-            </NavLink>
-            <NavLink to="/stock" className={linkStyle}>
-              📦 Current Stock
             </NavLink>
             <NavLink to="/stock-transfer" className={linkStyle}>
               🔄 Stock Transfer
@@ -66,13 +66,18 @@ const Sidebar = () => {
               🏬 Warehouse Stock View
             </NavLink>
           </SidebarDropdown>
-
           <SidebarDropdown icon={<Users className="w-5 h-5" />} title="Masters">
+            <NavLink to="/add-client" className={linkStyle}>
+              ➕ Add Client
+            </NavLink>
             <NavLink to="/clients" className={linkStyle}>
-              👤 Customers
+              👤 Clients
+            </NavLink>
+            <NavLink to="/add-vendor" className={linkStyle}>
+              ➕ Add Vendor
             </NavLink>
             <NavLink to="/vendors" className={linkStyle}>
-              🏢 Suppliers
+              🏢 Vendors
             </NavLink>
             <NavLink to="/add-unit" className={linkStyle}>
               📐 Units of Measure
@@ -81,10 +86,16 @@ const Sidebar = () => {
               📂 Product Categories
             </NavLink>
             {user?.role === "admin" && (
+              <NavLink to="/add-user" className={linkStyle}>
+                ➕ Add User
+              </NavLink>
+            )}
+            {user?.role === "admin" && (
               <NavLink to="/admin/users" className={linkStyle}>
                 👁️ User Management
               </NavLink>
             )}
+
             {user?.role === "admin" && (
               <NavLink to="/add-warehouse" className={linkStyle}>
                 🏬 Add Warehouse
